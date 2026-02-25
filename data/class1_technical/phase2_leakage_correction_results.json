@@ -1,0 +1,53 @@
+{
+  "Lung": {
+    "baseline": {
+      "donor_bal_acc": 0.7892443356910555,
+      "donor_auc": 0.9369903803845809,
+      "n_edges": 8132,
+      "asi_mean_vs_balanced": 0.19802115857601166,
+      "pct_high_asi_vs_balanced": 10.14510575504181,
+      "r_vs_balanced": 0.9969295322422692
+    },
+    "regress_donor": {
+      "donor_bal_acc": 0.6693612954275863,
+      "donor_auc": 0.865552385851047,
+      "edge_correlation_vs_baseline": 0.9889373779296875,
+      "n_edges": 8132,
+      "asi_mean_vs_balanced": 0.3722040355205536,
+      "pct_high_asi_vs_balanced": 20.5730447614363,
+      "r_vs_balanced": 0.985341284183626
+    },
+    "regress_batch": {
+      "donor_bal_acc": 0.6733388331897409,
+      "donor_auc": 0.8679419104440471,
+      "edge_correlation_vs_baseline": 0.987040102481842,
+      "n_edges": 8132,
+      "asi_mean_vs_balanced": 0.39376136660575867,
+      "pct_high_asi_vs_balanced": 21.839645843580914,
+      "r_vs_balanced": 0.9834135199817526
+    },
+    "combat": {
+      "donor_bal_acc": 0.5578476495569544,
+      "donor_auc": 0.8026922023674059,
+      "edge_correlation_vs_baseline": 0.9855129059563769,
+      "n_edges": 8132,
+      "asi_mean_vs_balanced": 0.4152159187011079,
+      "pct_high_asi_vs_balanced": 24.00393507132317,
+      "r_vs_balanced": 0.9831254580871343
+    },
+    "within_method_avg": {
+      "edge_correlation_vs_baseline": 0.954986572265625,
+      "n_edges": 8132,
+      "n_common_edges": 8132
+    },
+    "regress_donor_method": {
+      "donor_bal_acc": 0.6737493883793052,
+      "donor_auc": 0.8671520421682137,
+      "edge_correlation_vs_baseline": 0.987881064414978,
+      "n_edges": 8132,
+      "asi_mean_vs_balanced": 0.3850068151950836,
+      "pct_high_asi_vs_balanced": 21.384653221839645,
+      "r_vs_balanced": 0.9841575157585836
+    }
+  }
+}
