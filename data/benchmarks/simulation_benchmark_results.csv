@@ -1,0 +1,17 @@
+scenario,label,n_edges,donor_strength,prox_strength,hub_strength,class1_donor_AUROC,class1_donor_AUPRC,class1_leakage_AUC_donor,class2_proximity_precision,class2_proximity_recall,class3_topology_AUROC,class3_topology_AUPRC,joint_retention_rate,joint_retention_ci_lo,joint_retention_ci_hi
+null,null_seed0,425,0.0,0.0,0.0,,,0.5223,,,,,0.0,0.0,0.0
+null,null_seed1,476,0.0,0.0,0.0,,,0.5114,,,,,0.0,0.0,0.0
+donor_only,donor_s0.3_seed0,452,0.3,0.0,0.0,0.9622001200824915,0.9450661041185313,1.0,,,,,0.0,0.0,0.0
+donor_only,donor_s0.3_seed1,475,0.3,0.0,0.0,0.9749551505995656,0.953570317263395,1.0,,,,,0.0,0.0,0.0
+donor_only,donor_s1.0_seed0,452,1.0,0.0,0.0,0.9900279322317069,0.9850383019721871,1.0,,,,,0.0,0.0,0.0
+donor_only,donor_s1.0_seed1,475,1.0,0.0,0.0,0.9904636011708055,0.9865342892236684,1.0,,,,,0.0,0.0,0.0
+proximity_only,proximity_s0.3_seed0,452,0.0,0.3,0.0,,,0.5196,0.75,1.0,,,0.0,0.0,0.0
+proximity_only,proximity_s0.3_seed1,475,0.0,0.3,0.0,,,0.5136,0.75,1.0,,,0.0,0.0,0.0
+proximity_only,proximity_s1.0_seed0,452,0.0,1.0,0.0,,,0.5196,0.75,1.0,,,0.0,0.0,0.0
+proximity_only,proximity_s1.0_seed1,475,0.0,1.0,0.0,,,0.5136,0.75,1.0,,,0.0,0.0,0.0
+topology_only,topology_s0.3_seed0,452,0.0,0.0,0.3,,,0.5196,,,0.5,0.19911504424778761,0.0,0.0,0.0
+topology_only,topology_s0.3_seed1,475,0.0,0.0,0.3,,,0.5136,,,0.5,0.1957894736842105,0.0,0.0,0.0
+topology_only,topology_s1.0_seed0,452,0.0,0.0,1.0,,,0.5196,,,0.5,0.19911504424778761,0.0,0.0,0.0
+topology_only,topology_s1.0_seed1,475,0.0,0.0,1.0,,,0.5136,,,0.5,0.1957894736842105,0.0,0.0,0.0
+combined,combined_seed0,465,0.8,1.0,0.4,0.9968782518210197,0.9890237851314844,1.0,0.6666666666666666,1.0,0.5,0.12903225806451613,0.0,0.0,0.0
+combined,combined_seed1,444,0.8,1.0,0.4,0.9880044310808671,0.9748042004054024,1.0,0.5,1.0,0.5,0.12612612612612611,0.0,0.0,0.0

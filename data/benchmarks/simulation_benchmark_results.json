@@ -1,0 +1,960 @@
+{
+  "null": [
+    {
+      "label": "null_seed0",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 10,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.0,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 0.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.5,
+        "hub_confound_strength": 0.0,
+        "hub_confound_fraction": 0.1,
+        "base_noise_sd": 0.1,
+        "seed": 100
+      },
+      "n_edges": 425,
+      "class1_donor_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class1_blacklist_rate": 1.0,
+      "class1_leakage_auc": 0.5223,
+      "class2_metrics": {
+        "prevalence_truth": 0.0,
+        "prevalence_flag": 0.002352941176470588
+      },
+      "class3_topology_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 8.91,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 1.0,
+        "class2": 0.9976470588235294,
+        "class3": 0.0
+      }
+    },
+    {
+      "label": "null_seed1",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 10,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.0,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 0.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.5,
+        "hub_confound_strength": 0.0,
+        "hub_confound_fraction": 0.1,
+        "base_noise_sd": 0.1,
+        "seed": 101
+      },
+      "n_edges": 476,
+      "class1_donor_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class1_blacklist_rate": 1.0,
+      "class1_leakage_auc": 0.5114,
+      "class2_metrics": {
+        "prevalence_truth": 0.0,
+        "prevalence_flag": 0.0063025210084033615
+      },
+      "class3_topology_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 8.31,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 1.0,
+        "class2": 0.9936974789915967,
+        "class3": 0.0
+      }
+    }
+  ],
+  "donor_only": [
+    {
+      "label": "donor_s0.3_seed0",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 10,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.3,
+        "donor_confound_fraction": 0.25,
+        "proximity_confound_strength": 0.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.5,
+        "hub_confound_strength": 0.0,
+        "hub_confound_fraction": 0.1,
+        "base_noise_sd": 0.1,
+        "seed": 200
+      },
+      "n_edges": 452,
+      "class1_donor_metrics": {
+        "auroc": 0.9622001200824915,
+        "auprc": 0.9450661041185313,
+        "prevalence": 0.25
+      },
+      "class1_blacklist_rate": 0.995575221238938,
+      "class1_leakage_auc": 1.0,
+      "class2_metrics": {
+        "prevalence_truth": 0.0,
+        "prevalence_flag": 0.0
+      },
+      "class3_topology_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 9.49,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.995575221238938,
+        "class2": 1.0,
+        "class3": 0.0
+      }
+    },
+    {
+      "label": "donor_s0.3_seed1",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 10,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.3,
+        "donor_confound_fraction": 0.25,
+        "proximity_confound_strength": 0.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.5,
+        "hub_confound_strength": 0.0,
+        "hub_confound_fraction": 0.1,
+        "base_noise_sd": 0.1,
+        "seed": 201
+      },
+      "n_edges": 475,
+      "class1_donor_metrics": {
+        "auroc": 0.9749551505995656,
+        "auprc": 0.953570317263395,
+        "prevalence": 0.2505263157894737
+      },
+      "class1_blacklist_rate": 0.9957894736842106,
+      "class1_leakage_auc": 1.0,
+      "class2_metrics": {
+        "prevalence_truth": 0.0,
+        "prevalence_flag": 0.004210526315789474
+      },
+      "class3_topology_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 9.52,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.9957894736842106,
+        "class2": 0.9957894736842106,
+        "class3": 0.0
+      }
+    },
+    {
+      "label": "donor_s1.0_seed0",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 10,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 1.0,
+        "donor_confound_fraction": 0.25,
+        "proximity_confound_strength": 0.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.5,
+        "hub_confound_strength": 0.0,
+        "hub_confound_fraction": 0.1,
+        "base_noise_sd": 0.1,
+        "seed": 200
+      },
+      "n_edges": 452,
+      "class1_donor_metrics": {
+        "auroc": 0.9900279322317069,
+        "auprc": 0.9850383019721871,
+        "prevalence": 0.25
+      },
+      "class1_blacklist_rate": 0.9778761061946902,
+      "class1_leakage_auc": 1.0,
+      "class2_metrics": {
+        "prevalence_truth": 0.0,
+        "prevalence_flag": 0.0
+      },
+      "class3_topology_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 7.41,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.9778761061946902,
+        "class2": 1.0,
+        "class3": 0.0
+      }
+    },
+    {
+      "label": "donor_s1.0_seed1",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 10,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 1.0,
+        "donor_confound_fraction": 0.25,
+        "proximity_confound_strength": 0.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.5,
+        "hub_confound_strength": 0.0,
+        "hub_confound_fraction": 0.1,
+        "base_noise_sd": 0.1,
+        "seed": 201
+      },
+      "n_edges": 475,
+      "class1_donor_metrics": {
+        "auroc": 0.9904636011708055,
+        "auprc": 0.9865342892236684,
+        "prevalence": 0.2505263157894737
+      },
+      "class1_blacklist_rate": 0.991578947368421,
+      "class1_leakage_auc": 1.0,
+      "class2_metrics": {
+        "prevalence_truth": 0.0,
+        "prevalence_flag": 0.004210526315789474
+      },
+      "class3_topology_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 7.26,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.991578947368421,
+        "class2": 0.9957894736842106,
+        "class3": 0.0
+      }
+    }
+  ],
+  "proximity_only": [
+    {
+      "label": "proximity_s0.3_seed0",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 4,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.0,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 0.3,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.7,
+        "hub_confound_strength": 0.0,
+        "hub_confound_fraction": 0.1,
+        "base_noise_sd": 0.1,
+        "seed": 200
+      },
+      "n_edges": 452,
+      "class1_donor_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class1_blacklist_rate": 0.9977876106194691,
+      "class1_leakage_auc": 0.5196,
+      "class2_metrics": {
+        "prevalence_truth": 0.00663716814159292,
+        "prevalence_flag": 0.008849557522123894,
+        "precision": 0.75,
+        "recall": 1.0,
+        "tp": 3,
+        "fp": 1,
+        "fn": 0,
+        "tn": 448
+      },
+      "class3_topology_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 9.76,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.9977876106194691,
+        "class2": 0.9911504424778761,
+        "class3": 0.0
+      }
+    },
+    {
+      "label": "proximity_s0.3_seed1",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 4,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.0,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 0.3,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.7,
+        "hub_confound_strength": 0.0,
+        "hub_confound_fraction": 0.1,
+        "base_noise_sd": 0.1,
+        "seed": 201
+      },
+      "n_edges": 475,
+      "class1_donor_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class1_blacklist_rate": 1.0,
+      "class1_leakage_auc": 0.5136,
+      "class2_metrics": {
+        "prevalence_truth": 0.00631578947368421,
+        "prevalence_flag": 0.008421052631578947,
+        "precision": 0.75,
+        "recall": 1.0,
+        "tp": 3,
+        "fp": 1,
+        "fn": 0,
+        "tn": 471
+      },
+      "class3_topology_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 9.68,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 1.0,
+        "class2": 0.991578947368421,
+        "class3": 0.0
+      }
+    },
+    {
+      "label": "proximity_s1.0_seed0",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 4,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.0,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 1.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.7,
+        "hub_confound_strength": 0.0,
+        "hub_confound_fraction": 0.1,
+        "base_noise_sd": 0.1,
+        "seed": 200
+      },
+      "n_edges": 452,
+      "class1_donor_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class1_blacklist_rate": 0.9977876106194691,
+      "class1_leakage_auc": 0.5196,
+      "class2_metrics": {
+        "prevalence_truth": 0.00663716814159292,
+        "prevalence_flag": 0.008849557522123894,
+        "precision": 0.75,
+        "recall": 1.0,
+        "tp": 3,
+        "fp": 1,
+        "fn": 0,
+        "tn": 448
+      },
+      "class3_topology_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 8.47,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.9977876106194691,
+        "class2": 0.9911504424778761,
+        "class3": 0.0
+      }
+    },
+    {
+      "label": "proximity_s1.0_seed1",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 4,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.0,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 1.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.7,
+        "hub_confound_strength": 0.0,
+        "hub_confound_fraction": 0.1,
+        "base_noise_sd": 0.1,
+        "seed": 201
+      },
+      "n_edges": 475,
+      "class1_donor_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class1_blacklist_rate": 0.9936842105263158,
+      "class1_leakage_auc": 0.5136,
+      "class2_metrics": {
+        "prevalence_truth": 0.00631578947368421,
+        "prevalence_flag": 0.008421052631578947,
+        "precision": 0.75,
+        "recall": 1.0,
+        "tp": 3,
+        "fp": 1,
+        "fn": 0,
+        "tn": 471
+      },
+      "class3_topology_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 9.49,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.9936842105263158,
+        "class2": 0.991578947368421,
+        "class3": 0.0
+      }
+    }
+  ],
+  "topology_only": [
+    {
+      "label": "topology_s0.3_seed0",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 10,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.0,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 0.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.5,
+        "hub_confound_strength": 0.3,
+        "hub_confound_fraction": 0.2,
+        "base_noise_sd": 0.1,
+        "seed": 200
+      },
+      "n_edges": 452,
+      "class1_donor_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class1_blacklist_rate": 0.9800884955752213,
+      "class1_leakage_auc": 0.5196,
+      "class2_metrics": {
+        "prevalence_truth": 0.0,
+        "prevalence_flag": 0.0
+      },
+      "class3_topology_metrics": {
+        "auroc": 0.5,
+        "auprc": 0.19911504424778761,
+        "prevalence": 0.19911504424778761
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 8.24,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.9800884955752213,
+        "class2": 1.0,
+        "class3": 0.0
+      }
+    },
+    {
+      "label": "topology_s0.3_seed1",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 10,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.0,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 0.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.5,
+        "hub_confound_strength": 0.3,
+        "hub_confound_fraction": 0.2,
+        "base_noise_sd": 0.1,
+        "seed": 201
+      },
+      "n_edges": 475,
+      "class1_donor_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class1_blacklist_rate": 0.9536842105263158,
+      "class1_leakage_auc": 0.5136,
+      "class2_metrics": {
+        "prevalence_truth": 0.0,
+        "prevalence_flag": 0.004210526315789474
+      },
+      "class3_topology_metrics": {
+        "auroc": 0.5,
+        "auprc": 0.1957894736842105,
+        "prevalence": 0.1957894736842105
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 9.8,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.9536842105263158,
+        "class2": 0.9957894736842106,
+        "class3": 0.0
+      }
+    },
+    {
+      "label": "topology_s1.0_seed0",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 10,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.0,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 0.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.5,
+        "hub_confound_strength": 1.0,
+        "hub_confound_fraction": 0.2,
+        "base_noise_sd": 0.1,
+        "seed": 200
+      },
+      "n_edges": 452,
+      "class1_donor_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class1_blacklist_rate": 0.7986725663716814,
+      "class1_leakage_auc": 0.5196,
+      "class2_metrics": {
+        "prevalence_truth": 0.0,
+        "prevalence_flag": 0.0
+      },
+      "class3_topology_metrics": {
+        "auroc": 0.5,
+        "auprc": 0.19911504424778761,
+        "prevalence": 0.19911504424778761
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 10.78,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.7986725663716814,
+        "class2": 1.0,
+        "class3": 0.0
+      }
+    },
+    {
+      "label": "topology_s1.0_seed1",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 10,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.0,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 0.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.5,
+        "hub_confound_strength": 1.0,
+        "hub_confound_fraction": 0.2,
+        "base_noise_sd": 0.1,
+        "seed": 201
+      },
+      "n_edges": 475,
+      "class1_donor_metrics": {
+        "auroc": NaN,
+        "auprc": NaN,
+        "prevalence": 0.0
+      },
+      "class1_blacklist_rate": 0.8042105263157895,
+      "class1_leakage_auc": 0.5136,
+      "class2_metrics": {
+        "prevalence_truth": 0.0,
+        "prevalence_flag": 0.004210526315789474
+      },
+      "class3_topology_metrics": {
+        "auroc": 0.5,
+        "auprc": 0.1957894736842105,
+        "prevalence": 0.1957894736842105
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 11.06,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.8042105263157895,
+        "class2": 0.9957894736842106,
+        "class3": 0.0
+      }
+    }
+  ],
+  "combined": [
+    {
+      "label": "combined_seed0",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 4,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.8,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 1.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.6,
+        "hub_confound_strength": 0.4,
+        "hub_confound_fraction": 0.15,
+        "base_noise_sd": 0.1,
+        "seed": 400
+      },
+      "n_edges": 465,
+      "class1_donor_metrics": {
+        "auroc": 0.9968782518210197,
+        "auprc": 0.9890237851314844,
+        "prevalence": 0.2
+      },
+      "class1_blacklist_rate": 0.989247311827957,
+      "class1_leakage_auc": 1.0,
+      "class2_metrics": {
+        "prevalence_truth": 0.004301075268817204,
+        "prevalence_flag": 0.0064516129032258064,
+        "precision": 0.6666666666666666,
+        "recall": 1.0,
+        "tp": 2,
+        "fp": 1,
+        "fn": 0,
+        "tn": 462
+      },
+      "class3_topology_metrics": {
+        "auroc": 0.5,
+        "auprc": 0.12903225806451613,
+        "prevalence": 0.12903225806451613
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 7.09,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.989247311827957,
+        "class2": 0.9935483870967742,
+        "class3": 0.0
+      }
+    },
+    {
+      "label": "combined_seed1",
+      "config": {
+        "n_tfs": 15,
+        "n_targets": 60,
+        "n_cells": 300,
+        "n_donors": 4,
+        "n_batches": 6,
+        "chromosomes": 4,
+        "chromosome_length_mb": 100.0,
+        "edge_density": 0.5,
+        "donor_confound_strength": 0.8,
+        "donor_confound_fraction": 0.2,
+        "proximity_confound_strength": 1.0,
+        "proximity_confound_window_mb": 1.0,
+        "proximity_confound_fraction": 0.6,
+        "hub_confound_strength": 0.4,
+        "hub_confound_fraction": 0.15,
+        "base_noise_sd": 0.1,
+        "seed": 401
+      },
+      "n_edges": 444,
+      "class1_donor_metrics": {
+        "auroc": 0.9880044310808671,
+        "auprc": 0.9748042004054024,
+        "prevalence": 0.20045045045045046
+      },
+      "class1_blacklist_rate": 0.9932432432432432,
+      "class1_leakage_auc": 1.0,
+      "class2_metrics": {
+        "prevalence_truth": 0.0022522522522522522,
+        "prevalence_flag": 0.0045045045045045045,
+        "precision": 0.5,
+        "recall": 1.0,
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "tn": 442
+      },
+      "class3_topology_metrics": {
+        "auroc": 0.5,
+        "auprc": 0.12612612612612611,
+        "prevalence": 0.12612612612612611
+      },
+      "class3_block_summary": {
+        "100": {
+          "z_score": 6.83,
+          "n_sig": 0,
+          "valid_block": true
+        }
+      },
+      "joint_retention": {
+        "rate": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "n_bootstrap": 300
+      },
+      "pass_rate_per_class": {
+        "class1": 0.9932432432432432,
+        "class2": 0.9954954954954955,
+        "class3": 0.0
+      }
+    }
+  ]
+}

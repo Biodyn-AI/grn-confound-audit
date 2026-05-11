@@ -1,0 +1,40 @@
+======================================================================
+GRN CONFOUND AUDIT REPORT
+======================================================================
+Timestamp: 2026-05-11T10:03:07.065395+00:00
+Edges: 969  TFs: 20  Targets: 100
+ASI threshold: 0.5  FDR q-cut: 0.1  Proximity principal threshold: 1.0 Mb
+
+----------------------------------------
+CLASS 1: TECHNICAL CONFOUND AUDIT
+----------------------------------------
+  ASI threshold: 0.5  Blacklist rate: 0.0%  (0/969)
+  Leakage [donor]: AUC = 1.0
+  Leakage [batch]: AUC = 0.4783
+  Leakage [method]: AUC = 0.5702
+
+----------------------------------------
+CLASS 2: GENOMIC-PROXIMITY AUDIT
+----------------------------------------
+  Significant combinations (p<0.05): 0
+
+----------------------------------------
+CLASS 3: TOPOLOGICAL CONFOUND AUDIT
+----------------------------------------
+  B = 2000  tail = gpd  FDR-q cut = 0.1
+  top-100: z = 8.37  n_sig(BH-q<=0.1) = 0  [VALID]
+  top-250: z = 13.92  n_sig(BH-q<=0.1) = 0  [VALID]
+  mean swap success = 0.253  mean turnover = 0.4877
+
+----------------------------------------
+CROSS-CLASS SYNTHESIS
+----------------------------------------
+  pass-rate[class1] = 1.000
+  pass-rate[class2] = 0.998
+  pass-rate[class3] = 0.504
+  class1_vs_class2        obs_agree=0.998  exp_indep=0.998  phi=0.0  chi2_p=None
+  class1_vs_class3        obs_agree=0.504  exp_indep=0.504  phi=0.0  chi2_p=None
+  class2_vs_class3        obs_agree=0.504  exp_indep=0.504  phi=0.0003  chi2_p=0.9918401582657721
+  joint_retention (all 3 pass) = 0.503  95% CI [0.471, 0.536]
+
+======================================================================

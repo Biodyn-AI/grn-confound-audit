@@ -1,0 +1,4 @@
+tf,n_edges,n_blacklisted,n_pert_sig,rate_clean,rate_blacklisted,rate_ratio,fisher_p_one_sided
+E2F4,81,62,4,0.1579,0.0161,9.789,0.03843990046521692
+ETS1,81,24,6,0.0702,0.0833,0.842,0.7573839662447257
+IRF1,81,59,4,0.0909,0.0339,2.682,0.29657037758303584

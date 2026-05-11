@@ -1,475 +1,496 @@
 #!/usr/bin/env python3
 """
-Generate all 4 figures for the three-class confound audit paper.
+Figure-generation script for grn_confound_audit.
 
-Every figure is plotted directly from intermediate data files (CSV/JSON)
-in data/, so labels and layout are fully controlled here.
-
-Layout rules:
-  - All panels stacked vertically (one per row, full width).
-  - Panel labels (A, B, C) integrated into subplot titles.
-  - Legends placed outside axes via bbox_to_anchor.
-
-Run:
-    python scripts/generate_figures.py
+Every panel is read from a canonical CSV/JSON produced by the audit
+pipeline or by ``scripts/run_simulation_benchmarks.py`` /
+``scripts/run_perturbation_validation.py``.  No numeric value is
+hard-coded.  If a source file is missing the corresponding panel is
+left blank with a printed warning so that consistency drift between the
+manuscript and the released code becomes immediately visible.
 """
 
+from __future__ import annotations
+
 import json
-import warnings
-warnings.filterwarnings("ignore")
+from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.gridspec import GridSpec
-from matplotlib.patches import Patch
-from matplotlib.lines import Line2D
-from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Paths (all relative to repository root)
-# ---------------------------------------------------------------------------
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
-OUT  = ROOT / "figures"
-OUT.mkdir(parents=True, exist_ok=True)
-
-# ---------------------------------------------------------------------------
-# Style
-# ---------------------------------------------------------------------------
-plt.rcParams.update({
-    "font.family": "serif",
-    "font.size": 11,
-    "axes.titlesize": 13,
-    "axes.labelsize": 12,
-    "xtick.labelsize": 10,
-    "ytick.labelsize": 10,
-    "legend.fontsize": 10,
-    "figure.dpi": 300,
-})
-
-# ---------------------------------------------------------------------------
-# Human-readable label mappings
-# ---------------------------------------------------------------------------
-CLEAN_METHOD_NAMES = {
-    "regulatory": "Regulatory DB",
-    "dorothea_intersection": "DoRothEA (high-conf.)",
-    "dorothea_union": "DoRothEA (all levels)",
-    "omnipath": "OmniPath",
-    "omnipath_relaxed": "OmniPath (relaxed)",
-    "dorothea_union_immune_hpn": "DoRothEA (all) + HPN",
-    "dorothea_intersection_immune_hpn": "DoRothEA (high) + HPN",
-    "intercell_union_immune_hpn": "InterCell (union) + HPN",
-    "intercell_union_sources_immune_hpn": "InterCell (sources) + HPN",
-    "intercell_union_targets_immune_hpn": "InterCell (targets) + HPN",
-    "intercell_relaxed_immune_hpn": "InterCell (relaxed) + HPN",
-    "intercell_moderate_immune_hpn": "InterCell (moderate) + HPN",
-    "intercell_strict_immune_hpn": "InterCell (strict) + HPN",
-    "omnipath_relaxed_immune_hpn": "OmniPath (relaxed) + HPN",
-}
-
-CLEAN_EXTERNAL_NAMES = {
-    "causal_adamson_submission": "Adamson (CRISPR)",
-    "causal_dixit_submission": "Dixit (CRISPR)",
-    "causal_shifrut_seed43": "Shifrut (CRISPR, s43)",
-    "causal_shifrut_seed44": "Shifrut (CRISPR, s44)",
-    "ortholog_human_immune": "Ortholog (immune)",
-    "ortholog_human_kidney": "Ortholog (kidney)",
-    "disagreement_lung": "Cross-method (lung)",
-    "disagreement_kidney": "Cross-method (kidney)",
-    "disagreement_shifrut": "Cross-method (Shifrut)",
-    "disagreement_dixit": "Cross-method (Dixit)",
-}
+BENCH = DATA / "benchmarks"
+FIG_DIR = ROOT / "figures"
+FIG_DIR.mkdir(parents=True, exist_ok=True)
 
 
-# ============================================================
-# Figure 1: Technical confound (batch/donor leakage)
-# ============================================================
-def fig1_technical():
-    """
-    Panel A: Cross-tissue leakage severity (3 tissues)
-    Panel B: Perturbation validation (clean vs blacklisted edges)
-    Panel C: Correction benchmark (donor AUC across 5 methods)
-    """
-    print("  Fig 1: Technical confound ...")
+def _safe_read_csv(path: Path):
+    if not path.exists():
+        print(f"  [WARN] missing {path}")
+        return None
+    return pd.read_csv(path)
 
-    with open(DATA / "class1_technical/all_results.json") as f:
-        phase1 = json.load(f)
-    with open(DATA / "class1_technical/phase2_kidney_results.json") as f:
-        kidney = json.load(f)
-    with open(DATA / "class1_technical/phase2_leakage_correction_results.json") as f:
-        correction = json.load(f)
-    pert_df = pd.read_csv(DATA / "class1_technical/phase2_perturbation_combined_Immune.csv")
 
-    fig, axes = plt.subplots(3, 1, figsize=(7.5, 8.0))
-    fig.subplots_adjust(hspace=0.55)
+def _safe_read_json(path: Path):
+    if not path.exists():
+        print(f"  [WARN] missing {path}")
+        return None
+    with path.open() as f:
+        return json.load(f)
 
-    # ------------------------------------------------------------------
-    # Panel A: Cross-tissue leakage severity
-    # ------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# Figure 1 -- Technical confound audit
+# ----------------------------------------------------------------------
+
+
+def figure_1_technical():
+    out_pdf = FIG_DIR / "fig1_technical.pdf"
+    pert = _safe_read_json(BENCH / "perturbation_validation_summary.json")
+    leakage = _safe_read_json(DATA / "class1_technical" / "all_results.json") or {}
+    corr = _safe_read_json(
+        DATA / "class1_technical" / "phase2_leakage_correction_results.json"
+    )
+
+    fig, axes = plt.subplots(1, 3, figsize=(13, 4.0))
+
+    # --- Panel A: per-tissue leakage AUC + blacklist rate
     ax = axes[0]
     tissues = ["Immune", "Lung", "Kidney"]
-    tissue_colors = ["#3B82F6", "#F59E0B", "#10B981"]
-
-    aucs = [
-        phase1["Immune"]["method_leakage"]["LogisticRegression"]["auc"],
-        phase1["Lung"]["method_leakage"]["LogisticRegression"]["auc"],
-        phase1["Kidney"]["method_leakage"]["LogisticRegression"]["auc"],
-    ]
-    blacklist = [
-        phase1["Immune"]["pct_high_ASI"],
-        phase1["Lung"]["pct_high_ASI"],
-        kidney["pct_high_ASI"],
-    ]
-
+    method_auc, blacklist = [], []
+    for t in tissues:
+        block = leakage.get(t, {}) or {}
+        method_block = block.get("method_leakage", {}) or {}
+        aucs = [v.get("auc") for v in method_block.values() if isinstance(v, dict)]
+        method_auc.append(float(np.nanmax(aucs)) if aucs else np.nan)
+        bl = block.get("asi_blacklist", {})
+        blacklist.append(float(bl.get("blacklist_rate", np.nan)))
     x = np.arange(len(tissues))
-    w = 0.32
-    ax.bar(x - w / 2, aucs, w, color=tissue_colors, alpha=0.85,
-           edgecolor="white", linewidth=0.8)
-    ax.bar(x + w / 2, [b / 100 for b in blacklist], w,
-           color=tissue_colors, alpha=0.45,
-           edgecolor=tissue_colors, linewidth=1.2, hatch="//")
-    ax.axhline(0.5, color="red", linestyle="--", lw=1.0, alpha=0.7)
-    ax.set_xticks(x)
-    ax.set_xticklabels(tissues, fontsize=12)
-    ax.set_ylabel("AUC / Fraction", fontsize=12)
-    ax.set_title("A.  Cross-tissue leakage severity", fontsize=13,
-                 fontweight="bold", loc="left", pad=8)
+    w = 0.35
+    ax.bar(x - w / 2, method_auc, w, label="method leakage AUC",
+           color="#4c72b0")
+    ax.bar(x + w / 2, blacklist, w, label="blacklist rate (ASI > 0.5)",
+           color="#dd8452", hatch="//")
+    ax.axhline(0.5, color="red", linestyle="--", linewidth=1, alpha=0.7,
+               label="chance")
+    ax.set_xticks(x); ax.set_xticklabels(tissues)
     ax.set_ylim(0, 1.05)
-    for i, (a, b) in enumerate(zip(aucs, blacklist)):
-        ax.text(i - w / 2, a + 0.02, f"{a:.2f}", ha="center", fontsize=10,
-                fontweight="bold")
-        ax.text(i + w / 2, b / 100 + 0.02, f"{b:.1f}%", ha="center",
-                fontsize=10, fontweight="bold")
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
+    ax.set_ylabel("AUC  /  blacklist fraction")
+    ax.set_title("A. Tissue-level leakage")
+    ax.legend(loc="lower left", fontsize=8, frameon=False)
 
-    # ------------------------------------------------------------------
-    # Panel B: Perturbation validation (Immune dataset)
-    # ------------------------------------------------------------------
+    # --- Panel B: perturbation validation with bootstrap CI
     ax = axes[1]
-    bl = pert_df[pert_df["blacklisted"]]
-    clean = pert_df[~pert_df["blacklisted"]]
+    if pert is not None:
+        rates = pert["rates"]
+        labels = ["Clean\n(ASI <= 0.5)", "Blacklisted\n(ASI > 0.5)"]
+        vals = [rates["rate_pert_sig_clean"], rates["rate_pert_sig_blacklisted"]]
+        bars = ax.bar(labels, vals, color=["#55a868", "#c44e52"])
+        for bar, v in zip(bars, vals):
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                bar.get_height() + 0.003,
+                f"{v:.1%}", ha="center", fontsize=9,
+            )
+        ax.set_ylim(0, max(vals) * 1.7 if max(vals) > 0 else 1)
+        ax.set_ylabel("perturbation-significant rate")
+        rr = rates["rate_ratio"]
+        rr_lo, rr_hi = rates["rate_ratio_bootstrap_95CI"]
+        ax.set_title(
+            "B. Perturbation validation\n"
+            f"rate ratio = {rr:.2f}  (95% CI {rr_lo:.2f}-{rr_hi:.2f})",
+            fontsize=10,
+        )
+        fp = (pert.get("fisher_test") or {}).get("p_value")
+        if fp is not None:
+            ax.text(
+                0.5, 0.95, f"Fisher one-sided p = {fp:.3f}",
+                transform=ax.transAxes, ha="center", fontsize=8,
+            )
+    else:
+        ax.set_title("B. Perturbation validation (missing)")
+        ax.set_axis_off()
 
-    sig_rates = [clean["pert_significant"].mean(),
-                 bl["pert_significant"].mean()]
-    mean_effects = [clean["pert_abs_delta"].mean(),
-                    bl["pert_abs_delta"].mean()]
-    bar_colors = ["#3B82F6", "#EF4444"]
-    labels_b = [f"Clean edges\n(n = {len(clean)})",
-                f"Blacklisted edges\n(n = {len(bl)})"]
-
-    x = np.arange(2)
-    w = 0.32
-    ax.bar(x - w / 2, sig_rates, w, color=bar_colors, alpha=0.85,
-           edgecolor="white", linewidth=0.8)
-    ax.bar(x + w / 2, mean_effects, w, color=bar_colors, alpha=0.40,
-           edgecolor=bar_colors, linewidth=1.2, hatch="//")
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels_b, fontsize=12)
-    ax.set_ylabel("Rate / Effect size", fontsize=12)
-    ax.set_title("B.  Perturbation validation (immune dataset)", fontsize=13,
-                 fontweight="bold", loc="left", pad=8)
-    all_vals = sig_rates + mean_effects
-    ax.set_ylim(0, max(all_vals) * 1.25)
-    for i, (s, e) in enumerate(zip(sig_rates, mean_effects)):
-        ax.text(i - w / 2, s + max(all_vals) * 0.02, f"{s:.1%}",
-                ha="center", fontsize=10, fontweight="bold")
-        ax.text(i + w / 2, e + max(all_vals) * 0.02, f"{e:.3f}",
-                ha="center", fontsize=10, fontweight="bold")
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    # ------------------------------------------------------------------
-    # Panel C: Leakage correction benchmark (Lung dataset)
-    # ------------------------------------------------------------------
+    # --- Panel C: leakage-correction benchmark (lung)
     ax = axes[2]
-    lung_corr = correction["Lung"]
-    methods = ["baseline", "regress_donor", "regress_batch",
-               "combat", "regress_donor_method"]
-    labels_c = ["Baseline", "Regress\ndonor", "Regress\nbatch",
-                "ComBat", "Regress\ndonor+method"]
-    method_colors = ["#6B7280", "#3B82F6", "#F59E0B", "#8B5CF6", "#EF4444"]
+    if corr is not None:
+        try:
+            methods = list(corr.keys())
+            after = [
+                float(corr[m].get("donor_auc_after",
+                                   corr[m].get("auc_after", np.nan)))
+                for m in methods
+            ]
+            ax.barh(methods, after, color="#8172b3")
+            ax.axvline(0.5, color="red", linestyle="--", alpha=0.7)
+            ax.set_xlabel("Donor classification AUC (after correction)")
+            ax.set_title("C. Leakage correction (lung - balanced donors)")
+            ax.set_xlim(0, 1.0)
+        except Exception as e:
+            ax.text(0.05, 0.5, f"correction parse error: {e}",
+                    transform=ax.transAxes, fontsize=8)
+            ax.set_axis_off()
+    else:
+        ax.set_axis_off()
 
-    aucs_c = [lung_corr[m].get("donor_auc", float("nan")) for m in methods]
-    x = np.arange(len(methods))
-
-    ax.bar(x, aucs_c, color=method_colors, alpha=0.85, width=0.55,
-           edgecolor="white", linewidth=0.8)
-    ax.axhline(0.5, color="red", linestyle="--", lw=1.0, alpha=0.7)
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels_c, fontsize=10)
-    ax.set_ylabel("Donor-classification AUC", fontsize=12)
-    ax.set_title("C.  Leakage correction benchmark (lung dataset)", fontsize=13,
-                 fontweight="bold", loc="left", pad=8)
-    ax.set_ylim(0.4, 1.05)
-    for i, v in enumerate(aucs_c):
-        if not np.isnan(v):
-            ax.text(i, v + 0.015, f"{v:.3f}", ha="center", fontsize=11,
-                    fontweight="bold")
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    legend_handles = [
-        Patch(facecolor="#3B82F6", alpha=0.85, edgecolor="white",
-              label="AUC / validation rate (solid)"),
-        Patch(facecolor="#3B82F6", alpha=0.45, edgecolor="#3B82F6",
-              hatch="//", label="Blacklist rate / effect size (hatched)"),
-        Line2D([0], [0], color="red", linestyle="--", lw=1.0,
-               label="Chance level (AUC = 0.5)"),
-    ]
-    fig.legend(handles=legend_handles, loc="lower center",
-               bbox_to_anchor=(0.5, -0.03), ncol=3, fontsize=8,
-               framealpha=0.9, edgecolor="0.8")
-
-    fig.savefig(OUT / "fig1_technical.pdf", bbox_inches="tight", dpi=300)
+    plt.tight_layout()
+    plt.savefig(out_pdf, bbox_inches="tight")
     plt.close(fig)
+    print(f"[fig1] wrote {out_pdf}")
 
 
-# ============================================================
-# Figure 2: Genomic-proximity confound
-# ============================================================
-def fig2_proximity():
-    """
-    Panel A: Proximity enrichment curves (4 primary methods)
-    Panel B: External replication enrichment (non-NaN datasets)
-    """
-    print("  Fig 2: Genomic proximity bias ...")
+# ----------------------------------------------------------------------
+# Figure 2 -- Proximity audit
+# ----------------------------------------------------------------------
 
-    df_prox = pd.read_csv(DATA / "class2_proximity/proximity_bias_curves.csv")
-    df_ext = pd.read_csv(
-        DATA / "class2_proximity/external_replication_proximity_curves.csv")
 
-    fig, axes = plt.subplots(2, 1, figsize=(7.5, 7.0))
-    fig.subplots_adjust(hspace=0.55)
+def figure_2_proximity():
+    out_pdf = FIG_DIR / "fig2_proximity.pdf"
+    curves = _safe_read_csv(DATA / "class2_proximity" / "proximity_bias_curves.csv")
+    ext = _safe_read_csv(
+        DATA / "class2_proximity" / "external_replication_proximity_curves.csv"
+    )
 
-    # --- Panel A ---
+    fig, axes = plt.subplots(1, 2, figsize=(11.5, 4.2))
+
     ax = axes[0]
-    primary_methods = ["regulatory", "dorothea_intersection",
-                       "dorothea_union", "omnipath_relaxed"]
-    colors_a = ["#3B82F6", "#EF4444", "#F59E0B", "#10B981"]
-    markers_a = ["o", "s", "D", "^"]
+    if curves is not None:
+        sub = curves[(curves["threshold_bp"] == 1_000_000) & (curves["k"] == 1000)]
+        sub = sub.head(10).copy()
+        methods = sub["method"].tolist()
+        src = sub["enrichment_ratio"].astype(float).fillna(0).values
+        deg = sub.get("degree_enrichment_ratio",
+                      pd.Series([np.nan] * len(sub))).astype(float).fillna(0).values
+        x = np.arange(len(methods))
+        w = 0.4
+        ax.bar(x - w / 2, src, w, label="source-preserving",
+               color="#4c72b0")
+        ax.bar(x + w / 2, deg, w, label="degree-preserving",
+               color="#dd8452")
+        ax.axhline(1.0, color="black", linestyle=":", linewidth=0.8)
+        ax.set_xticks(x); ax.set_xticklabels(methods, rotation=45, ha="right",
+                                              fontsize=8)
+        ax.set_ylabel("Proximity enrichment ratio")
+        ax.set_title("A. Source- vs. degree-preserving null (top-1000, 1 Mb)")
+        ax.legend(loc="upper right", fontsize=8, frameon=False)
+    else:
+        ax.set_axis_off()
 
-    for method, color, marker in zip(primary_methods, colors_a, markers_a):
-        sub = df_prox[df_prox["method"] == method].sort_values("threshold_bp")
-        label = CLEAN_METHOD_NAMES.get(method, method)
-        ax.plot(sub["threshold_bp"] / 1000, sub["enrichment_ratio"],
-                marker=marker, color=color, label=label, markersize=7,
-                linewidth=2, alpha=0.85)
-
-    ax.axhline(1.0, color="gray", linestyle="--", lw=0.8, alpha=0.6)
-    ax.set_xlabel("Distance threshold (kb)", fontsize=12)
-    ax.set_ylabel("Proximity enrichment ratio", fontsize=12)
-    ax.set_title("A.  Genomic proximity bias across GRN inference methods",
-                 fontsize=13, fontweight="bold", loc="left", pad=8)
-    ax.legend(fontsize=9, loc="upper center", bbox_to_anchor=(0.5, -0.18),
-              ncol=2, framealpha=0.9)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    # --- Panel B ---
     ax = axes[1]
-    valid_methods = []
-    for method in df_ext["method"].unique():
-        sub = df_ext[df_ext["method"] == method]
-        if sub["enrichment_ratio"].notna().any() and \
-           (sub["enrichment_ratio"] > 0).any():
-            valid_methods.append(method)
+    if ext is not None:
+        groups = ext["external_group"].unique()[:3]
+        colors = ["#55a868", "#c44e52", "#8172b3"]
+        for g, c in zip(groups, colors):
+            sub = ext[(ext["external_group"] == g) & (ext["threshold_bp"] == 500_000)]
+            ax.scatter(
+                sub["k"], sub["enrichment_ratio"].astype(float),
+                label=g, color=c, alpha=0.7, s=18,
+            )
+        ax.axhline(1.0, color="black", linestyle=":", linewidth=0.8)
+        ax.set_xlabel("top-k")
+        ax.set_ylabel("Proximity enrichment ratio")
+        ax.set_title("B. External replication panels (BH-q within group)")
+        ax.legend(loc="upper right", fontsize=8, frameon=False)
+    else:
+        ax.set_axis_off()
 
-    cmap = plt.cm.tab10
-    for i, method in enumerate(valid_methods):
-        sub = df_ext[df_ext["method"] == method].sort_values("threshold_bp")
-        sub = sub[sub["enrichment_ratio"].notna()]
-        label = CLEAN_EXTERNAL_NAMES.get(method, method)
-        ax.plot(sub["threshold_bp"] / 1000, sub["enrichment_ratio"],
-                marker="o", color=cmap(i), label=label, markersize=6,
-                linewidth=1.8, alpha=0.85)
-
-    ax.axhline(1.0, color="gray", linestyle="--", lw=0.8, alpha=0.6)
-    ax.set_xlabel("Distance threshold (kb)", fontsize=12)
-    ax.set_ylabel("Proximity enrichment ratio", fontsize=12)
-    ax.set_title("B.  External replication of proximity bias",
-                 fontsize=13, fontweight="bold", loc="left", pad=8)
-    ax.legend(fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.18),
-              ncol=3, framealpha=0.9)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    fig.savefig(OUT / "fig2_proximity.pdf", bbox_inches="tight", dpi=300)
+    plt.tight_layout()
+    plt.savefig(out_pdf, bbox_inches="tight")
     plt.close(fig)
+    print(f"[fig2] wrote {out_pdf}")
 
 
-# ============================================================
-# Figure 3: Topological confound (degree-preserving null)
-# ============================================================
-def fig3_topological():
-    """
-    Panel A: Global z-scores across methods and top-k values
-    Panel B: Edge-level significance (all zeros finding)
-    """
-    print("  Fig 3: Topological confound ...")
+# ----------------------------------------------------------------------
+# Figure 3 -- Topological audit (all 12 methods)
+# ----------------------------------------------------------------------
 
-    df = pd.read_csv(DATA / "class3_topological/null_calibration_summary.csv")
 
-    fig, axes = plt.subplots(2, 1, figsize=(7.5, 7.5))
-    fig.subplots_adjust(hspace=0.75)
+def figure_3_topological():
+    out_pdf = FIG_DIR / "fig3_topological.pdf"
+    summary = _safe_read_csv(
+        DATA / "class3_topological" / "null_calibration_summary.csv"
+    )
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.2))
 
-    # --- Panel A: Global z-scores ---
     ax = axes[0]
-    rep_methods = ["regulatory", "omnipath", "omnipath_relaxed",
-                   "dorothea_union_immune_hpn", "intercell_strict_immune_hpn"]
-    colors_a = ["#3B82F6", "#EF4444", "#F59E0B", "#10B981", "#8B5CF6"]
-    markers_a = ["o", "s", "D", "^", "v"]
+    if summary is not None:
+        sub = summary.copy().sort_values(["method", "top_k"])
+        methods = sub["method"].unique()
+        cmap = plt.cm.tab20
+        for i, m in enumerate(methods):
+            ss = sub[sub["method"] == m]
+            ax.plot(
+                ss["top_k"], ss["z_mean_score"], marker="o", linewidth=1,
+                color=cmap(i % 20), label=m, alpha=0.8,
+            )
+        ax.set_xscale("log")
+        ax.set_xlabel("top-k")
+        ax.set_ylabel("Global z-score (observed vs. degree-preserving null)")
+        ax.set_title("A. Global separation across all methods")
+        ax.axhline(0, color="grey", linewidth=0.6, linestyle=":")
+        ax.legend(loc="upper right", fontsize=6, ncol=2, frameon=False)
+    else:
+        ax.set_axis_off()
 
-    for method, color, marker in zip(rep_methods, colors_a, markers_a):
-        sub = df[df["method"] == method].sort_values("top_k")
-        if len(sub) == 0:
-            continue
-        label = CLEAN_METHOD_NAMES.get(method, method)
-        ax.plot(sub["top_k"], sub["z_mean_score"],
-                marker=marker, color=color, label=label, markersize=8,
-                linewidth=2.2, alpha=0.85)
-
-    ax.set_xlabel("Top-k edges evaluated", fontsize=12)
-    ax.set_ylabel("Global z-score (vs. null)", fontsize=12)
-    ax.set_title("A.  Network-level separation from topological null",
-                 fontsize=13, fontweight="bold", loc="left", pad=8)
-    ax.legend(fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.18),
-              ncol=2, framealpha=0.9)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    # --- Panel B: Edge-level significance ---
     ax = axes[1]
-    sub_k = df[df["top_k"] == 1000].copy()
-    sub_k["clean_name"] = sub_k["method"].map(CLEAN_METHOD_NAMES)
-    sub_k = sub_k.dropna(subset=["clean_name"])
-    sub_k = sub_k.sort_values("z_mean_score", ascending=True)
+    if summary is not None:
+        try:
+            piv = summary.pivot_table(
+                index="method", columns="top_k",
+                values="edge_sig_count_q010", aggfunc="mean",
+            )
+            im = ax.imshow(piv.values, aspect="auto", cmap="Blues")
+            ax.set_xticks(np.arange(piv.columns.size))
+            ax.set_xticklabels(piv.columns)
+            ax.set_yticks(np.arange(piv.index.size))
+            ax.set_yticklabels(piv.index, fontsize=7)
+            ax.set_xlabel("top-k")
+            ax.set_title("B. Per-edge BH(q <= 0.10) significant count")
+            vmax = float(np.nanmax(piv.values)) if piv.size else 1.0
+            for (i, j), v in np.ndenumerate(piv.values):
+                if np.isnan(v):
+                    continue
+                ax.text(
+                    j, i, f"{int(v)}", ha="center", va="center", fontsize=7,
+                    color="black" if v < vmax / 2 else "white",
+                )
+            plt.colorbar(im, ax=ax, shrink=0.7)
+        except Exception as e:
+            ax.text(0.05, 0.5, f"heatmap error: {e}",
+                    transform=ax.transAxes, fontsize=8)
+            ax.set_axis_off()
+    else:
+        ax.set_axis_off()
 
-    y_pos = np.arange(len(sub_k))
-    ax.barh(y_pos, sub_k["z_mean_score"].values,
-            color="#3B82F6", alpha=0.75, height=0.6, edgecolor="white")
-    ax.set_yticks(y_pos)
-    ax.set_yticklabels(sub_k["clean_name"].values, fontsize=9)
-    ax.set_xlabel("Global z-score (network-level)", fontsize=12)
-    ax.set_title(
-        "B.  Strong global signal, zero edges significant (FDR \u2264 0.10)",
-        fontsize=12, fontweight="bold", loc="left", pad=8)
-
-    for i, (z, n_sig) in enumerate(
-            zip(sub_k["z_mean_score"].values,
-                sub_k["edge_sig_count_q010"].values)):
-        ax.text(z + 0.5, i, f"z = {z:.1f},  0 edges sig.",
-                va="center", fontsize=9, color="#333333")
-
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    fig.savefig(OUT / "fig3_topological.pdf", bbox_inches="tight", dpi=300)
+    plt.tight_layout()
+    plt.savefig(out_pdf, bbox_inches="tight")
     plt.close(fig)
+    print(f"[fig3] wrote {out_pdf}")
 
 
-# ============================================================
-# Figure 4: Cross-class confound overlap
-# ============================================================
-def fig4_crossclass():
-    """
-    Panel A: Filter pass rates (individual and joint)
-    Panel B: Pairwise filter agreement heatmap
+# ----------------------------------------------------------------------
+# Figure 4 -- Cross-class synthesis (read from CSV)
+# ----------------------------------------------------------------------
 
-    Cross-class summary statistics are derived from the per-edge confound
-    profile constructed during the cross-class synthesis (see Methods).
-    Values here correspond to the immune dataset with default thresholds
-    (ASI < 0.3 technical, OR < 1.5 proximity, z < 2.0 topological).
-    """
-    print("  Fig 4: Cross-class confound overlap ...")
 
-    fig = plt.figure(figsize=(7.5, 7.0))
-    gs = GridSpec(2, 1, figure=fig, hspace=0.55)
+def figure_4_crossclass():
+    out_pdf = FIG_DIR / "fig4_crossclass.pdf"
+    cc = _safe_read_csv(BENCH / "cross_class_synthesis_all_tissues.csv")
+    if cc is None:
+        cc = _safe_read_csv(BENCH / "cross_class_synthesis.csv")
+    if cc is None:
+        print("[fig4] no cross-class synthesis CSV; skipping")
+        return
 
-    # --- Panel A: Filter pass rates ---
-    ax = fig.add_subplot(gs[0])
-    filters = [
-        "Technical\n(ASI < 0.3)",
-        "Proximity\n(OR < 1.5)",
-        "Topological\n(z < 2.0)",
-        "All three\njointly",
-    ]
-    pass_rates = [0.60, 0.70, 0.65, 0.28]
-    fail_rates = [1 - p for p in pass_rates]
-    colors_pass = ["#4CAF50", "#4CAF50", "#4CAF50", "#2196F3"]
-    colors_fail = ["#FFCDD2", "#FFCDD2", "#FFCDD2", "#FFCDD2"]
+    fig, axes = plt.subplots(1, 3, figsize=(13, 4.0))
 
-    bars_pass = ax.bar(filters, pass_rates, color=colors_pass,
-                       edgecolor="white", linewidth=0.8, width=0.6)
-    ax.bar(filters, fail_rates, bottom=pass_rates,
-           color=colors_fail, edgecolor="white", linewidth=0.8, width=0.6)
+    pairs = cc["pair"].unique()
+    obs = cc.groupby("pair")["observed_agreement"].mean().reindex(pairs).values
+    exp = (
+        cc.groupby("pair")["expected_agreement_under_independence"]
+        .mean().reindex(pairs).values
+    )
 
-    for p, bar in zip(pass_rates, bars_pass):
-        ax.text(bar.get_x() + bar.get_width() / 2, p / 2,
-                f"{p * 100:.0f}%", ha="center", va="center",
-                fontweight="bold", fontsize=13, color="white")
+    ax = axes[0]
+    x = np.arange(len(pairs))
+    w = 0.4
+    ax.bar(x - w / 2, obs, w, label="observed", color="#4c72b0")
+    ax.bar(x + w / 2, exp, w, label="expected (indep.)", color="#dd8452")
+    ax.set_xticks(x); ax.set_xticklabels(pairs, rotation=30, ha="right", fontsize=8)
+    ax.set_ylim(0, 1.05)
+    ax.set_ylabel("Pairwise agreement")
+    ax.set_title("A. Observed vs. expected agreement")
+    ax.legend(loc="lower right", fontsize=8, frameon=False)
 
-    ax.set_ylabel("Fraction of edges", fontsize=13)
-    ax.set_ylim(0, 1.08)
-    ax.set_title("A.  Filter pass rates (immune dataset)", fontsize=13,
-                 fontweight="bold", loc="left", pad=8)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.tick_params(axis="x", labelsize=11)
-    ax.tick_params(axis="y", labelsize=11)
+    ax = axes[1]
+    phi = cc.groupby("pair")["phi_coefficient"].mean().reindex(pairs).values
+    chi2_p = cc.groupby("pair")["chi2_p_value"].mean().reindex(pairs).values
+    bars = ax.bar(pairs, phi, color="#55a868")
+    for bar, p in zip(bars, chi2_p):
+        if p is None or (isinstance(p, float) and np.isnan(p)):
+            label = ""
+        else:
+            label = f"chi2 p={p:.2g}"
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.005,
+            label, ha="center", fontsize=8,
+        )
+    ax.axhline(0, color="black", linewidth=0.7)
+    ax.tick_params(axis="x", rotation=30)
+    ax.set_ylabel("phi coefficient")
+    ax.set_title("B. Pairwise phi (with chi2 p)")
 
-    legend_elements = [
-        Patch(facecolor="#4CAF50", label="Pass (individual)"),
-        Patch(facecolor="#2196F3", label="Pass (all combined)"),
-        Patch(facecolor="#FFCDD2", label="Fail"),
-    ]
-    ax.legend(handles=legend_elements, fontsize=9, loc="upper center",
-              bbox_to_anchor=(0.5, -0.22), ncol=3, framealpha=0.9)
+    ax = axes[2]
+    if "tissue" in cc.columns:
+        tissues = cc["tissue"].unique()
+        rate = cc.groupby("tissue")["joint_retention_rate"].first().reindex(tissues).values
+        ci_lo = cc.groupby("tissue")["joint_retention_ci_lo"].first().reindex(tissues).values
+        ci_hi = cc.groupby("tissue")["joint_retention_ci_hi"].first().reindex(tissues).values
+        x = np.arange(len(tissues))
+        ax.bar(x, rate, color="#8172b3")
+        ax.errorbar(
+            x, rate, yerr=[rate - ci_lo, ci_hi - rate],
+            fmt="none", color="black",
+        )
+        ax.set_xticks(x); ax.set_xticklabels(tissues)
+    else:
+        ax.text(0.05, 0.5,
+                "Joint retention summary unavailable across tissues",
+                transform=ax.transAxes, fontsize=8)
+    ax.set_ylim(0, 1.0)
+    ax.set_ylabel("Three-way joint retention rate")
+    ax.set_title("C. Joint retention (95% bootstrap CI)")
 
-    # --- Panel B: Pairwise filter agreement matrix ---
-    ax2 = fig.add_subplot(gs[1])
-    classes = ["Technical", "Proximity", "Topological"]
-    overlap_matrix = np.array([
-        [1.00, 0.85, 0.78],
-        [0.85, 1.00, 0.82],
-        [0.78, 0.82, 1.00],
-    ])
-
-    im = ax2.imshow(overlap_matrix, cmap="YlOrRd", vmin=0.5, vmax=1.0,
-                    aspect="auto")
-    ax2.set_xticks(range(3))
-    ax2.set_xticklabels(classes, fontsize=11, rotation=25, ha="right")
-    ax2.set_yticks(range(3))
-    ax2.set_yticklabels(classes, fontsize=11)
-
-    for i in range(3):
-        for j in range(3):
-            text_color = "white" if overlap_matrix[i, j] > 0.9 else "black"
-            ax2.text(j, i, f"{overlap_matrix[i, j]:.2f}", ha="center",
-                     va="center", fontsize=14, fontweight="bold",
-                     color=text_color)
-
-    ax2.set_title("B.  Pairwise filter agreement (fraction of edges)",
-                  fontsize=13, fontweight="bold", loc="left", pad=8)
-    cbar = fig.colorbar(im, ax=ax2, shrink=0.7, pad=0.03)
-    cbar.ax.tick_params(labelsize=10)
-    cbar.set_label("Agreement fraction", fontsize=12)
-
-    fig.align_labels()
-    fig.savefig(OUT / "fig4_crossclass.pdf", bbox_inches="tight", dpi=300)
+    plt.tight_layout()
+    plt.savefig(out_pdf, bbox_inches="tight")
     plt.close(fig)
+    print(f"[fig4] wrote {out_pdf}")
 
 
-# ============================================================
+# ----------------------------------------------------------------------
+# Figure 5 -- Tool validation on simulated data (NEW)
+# ----------------------------------------------------------------------
+
+
+def figure_5_simulation():
+    out_pdf = FIG_DIR / "fig5_simulation_validation.pdf"
+    df = _safe_read_csv(BENCH / "simulation_benchmark_results.csv")
+    if df is None:
+        print("[fig5] simulation benchmark CSV missing; skipping")
+        return
+
+    fig, axes = plt.subplots(1, 3, figsize=(13, 4.0))
+
+    ax = axes[0]
+    sub = df[df["scenario"] == "donor_only"]
+    if len(sub):
+        agg = sub.groupby("donor_strength").agg(
+            mean_auroc=("class1_donor_AUROC", "mean"),
+            sd_auroc=("class1_donor_AUROC", "std"),
+        ).reset_index()
+        ax.errorbar(
+            agg["donor_strength"], agg["mean_auroc"],
+            yerr=agg["sd_auroc"], fmt="o-", color="#c44e52", capsize=4,
+        )
+        ax.axhline(0.5, color="grey", linestyle=":", linewidth=0.8)
+        ax.set_xlabel("Injected donor-confound strength")
+        ax.set_ylabel("Class 1 ASI -> truth AUROC")
+        ax.set_ylim(0, 1.05)
+        ax.set_title("A. Class 1 sensitivity (donor)")
+
+    ax = axes[1]
+    sub = df[df["scenario"] == "topology_only"]
+    if len(sub):
+        agg = sub.groupby("hub_strength").agg(
+            mean_auroc=("class3_topology_AUROC", "mean"),
+            sd_auroc=("class3_topology_AUROC", "std"),
+        ).reset_index()
+        ax.errorbar(
+            agg["hub_strength"], agg["mean_auroc"],
+            yerr=agg["sd_auroc"], fmt="s-", color="#4c72b0", capsize=4,
+        )
+        ax.axhline(0.5, color="grey", linestyle=":", linewidth=0.8)
+        ax.set_xlabel("Injected hub-confound strength")
+        ax.set_ylabel("Class 3 (1 - q) -> truth AUROC")
+        ax.set_ylim(0, 1.05)
+        ax.set_title("B. Class 3 sensitivity (topology)")
+
+    ax = axes[2]
+    sub = df.groupby("scenario").agg(
+        n=("joint_retention_rate", "count"),
+        mean_rate=("joint_retention_rate", "mean"),
+        sd_rate=("joint_retention_rate", "std"),
+    ).reset_index()
+    sub = sub[sub["mean_rate"].notna()]
+    if len(sub):
+        ax.bar(
+            sub["scenario"], sub["mean_rate"], color="#55a868",
+            yerr=sub["sd_rate"], capsize=4,
+        )
+        ax.set_ylim(0, 1.0)
+        ax.set_ylabel("Joint retention rate")
+        ax.set_title("C. Joint retention by scenario")
+        ax.tick_params(axis="x", rotation=20)
+
+    plt.tight_layout()
+    plt.savefig(out_pdf, bbox_inches="tight")
+    plt.close(fig)
+    print(f"[fig5] wrote {out_pdf}")
+
+
+# ----------------------------------------------------------------------
+# Figure 6 -- Pipeline schematic (NEW)
+# ----------------------------------------------------------------------
+
+
+def figure_6_pipeline_schematic():
+    out_pdf = FIG_DIR / "fig6_pipeline.pdf"
+    fig, ax = plt.subplots(figsize=(11, 5.4))
+    ax.set_axis_off()
+
+    nodes = [
+        (0.04, 0.65, 0.18, 0.22, "Raw counts\n+ metadata", "#cfe2f3"),
+        (0.04, 0.10, 0.18, 0.22, "TF / target /\ncoord resources", "#cfe2f3"),
+        (0.27, 0.40, 0.18, 0.22, "Inference\nmethods (x12)", "#fce5cd"),
+        (0.50, 0.72, 0.18, 0.16,
+         "Class 1 audit\nper-cell features,\nASI, leakage AUC", "#d9ead3"),
+        (0.50, 0.42, 0.18, 0.16,
+         "Class 2 audit\nproximity, 3 null\nfamilies, hub strata", "#d9ead3"),
+        (0.50, 0.12, 0.18, 0.16,
+         "Class 3 audit\ndegree null,\nper-edge BH (GPD tail)", "#d9ead3"),
+        (0.74, 0.42, 0.20, 0.40,
+         "Cross-class synthesis\nphi, chi2 indep. test,\nbootstrap CI on\n3-way joint retention",
+         "#ead1dc"),
+        (0.74, 0.10, 0.20, 0.22,
+         "Outputs\n- audit_results.json\n- edge_quality_indices.csv\n- cross_class_synthesis.csv\n- audit_summary.txt",
+         "#fff2cc"),
+    ]
+    for x, y, w, h, label, color in nodes:
+        ax.add_patch(plt.Rectangle((x, y), w, h, facecolor=color,
+                                    edgecolor="black", linewidth=1))
+        ax.text(x + w / 2, y + h / 2, label, ha="center", va="center",
+                fontsize=8.5)
+
+    def arrow(x0, y0, x1, y1):
+        ax.annotate(
+            "", xy=(x1, y1), xytext=(x0, y0),
+            arrowprops=dict(arrowstyle="->", lw=1.0),
+        )
+    arrow(0.22, 0.76, 0.27, 0.55)
+    arrow(0.22, 0.21, 0.27, 0.50)
+    arrow(0.45, 0.55, 0.50, 0.80)
+    arrow(0.45, 0.50, 0.50, 0.50)
+    arrow(0.45, 0.45, 0.50, 0.20)
+    arrow(0.68, 0.80, 0.74, 0.70)
+    arrow(0.68, 0.50, 0.74, 0.55)
+    arrow(0.68, 0.20, 0.74, 0.45)
+    arrow(0.84, 0.42, 0.84, 0.32)
+
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+    plt.savefig(out_pdf, bbox_inches="tight")
+    plt.close(fig)
+    print(f"[fig6] wrote {out_pdf}")
+
+
+# ----------------------------------------------------------------------
 # Main
-# ============================================================
+# ----------------------------------------------------------------------
+
+
+def main():
+    figure_1_technical()
+    figure_2_proximity()
+    figure_3_topological()
+    figure_4_crossclass()
+    figure_5_simulation()
+    figure_6_pipeline_schematic()
+    print("\nAll figures written to", FIG_DIR)
+
+
 if __name__ == "__main__":
-    print("Generating figures ...\n")
-    fig1_technical()
-    fig2_proximity()
-    fig3_topological()
-    fig4_crossclass()
-    print("\nAll 4 figures saved to figures/")
+    main()

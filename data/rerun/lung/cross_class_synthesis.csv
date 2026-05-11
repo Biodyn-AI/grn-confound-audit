@@ -1,0 +1,4 @@
+pair,class_a,class_b,n,n11_both_pass,n10_a_pass_only,n01_b_pass_only,n00_both_fail,observed_agreement,expected_agreement_under_independence,phi_coefficient,chi2,chi2_p_value
+class1_vs_class2,class1,class2,969,967,2,0,0,0.9979,0.9979,0.0,,
+class1_vs_class3,class1,class3,969,488,481,0,0,0.5036,0.5036,0.0,,
+class2_vs_class3,class2,class3,969,487,480,1,1,0.5036,0.5036,0.0003,0.0001,0.9918401582657721

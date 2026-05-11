@@ -1,0 +1,55 @@
+{
+  "per_tissue": {
+    "Immune": {
+      "source": "/Users/ihorkendiukhov/biodyn-work/grn-confound-audit/data/rerun/immune/audit_results.json",
+      "is_synthesised": false,
+      "n_edges": 964,
+      "pass_rate_per_class": {
+        "class1": 0.9730290456431535,
+        "class2": 0.9979253112033195,
+        "class3": 0.5010373443983402
+      },
+      "joint_retention": {
+        "rate": 0.4855,
+        "ci_lo": 0.4533,
+        "ci_hi": 0.5145,
+        "n_bootstrap": 1000
+      },
+      "wall_clock_s": 280.93
+    },
+    "Lung": {
+      "source": "/Users/ihorkendiukhov/biodyn-work/grn-confound-audit/data/rerun/lung/audit_results.json",
+      "is_synthesised": false,
+      "n_edges": 969,
+      "pass_rate_per_class": {
+        "class1": 1.0,
+        "class2": 0.9979360165118679,
+        "class3": 0.5036119711042312
+      },
+      "joint_retention": {
+        "rate": 0.5026,
+        "ci_lo": 0.4706,
+        "ci_hi": 0.5356,
+        "n_bootstrap": 1000
+      },
+      "wall_clock_s": 499.1
+    },
+    "Kidney": {
+      "source": "/Users/ihorkendiukhov/biodyn-work/grn-confound-audit/data/rerun/kidney/audit_results.json",
+      "is_synthesised": false,
+      "n_edges": 987,
+      "pass_rate_per_class": {
+        "class1": 1.0,
+        "class2": 0.9929078014184397,
+        "class3": 0.5005065856129686
+      },
+      "joint_retention": {
+        "rate": 0.4965,
+        "ci_lo": 0.467,
+        "ci_hi": 0.5258,
+        "n_bootstrap": 1000
+      },
+      "wall_clock_s": 35.43
+    }
+  }
+}

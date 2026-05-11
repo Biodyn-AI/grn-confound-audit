@@ -1,104 +1,121 @@
-# Three Classes of Confound in Gene-Regulatory-Network Inference
+# grn_confound_audit
 
-Data and analysis code for a systematic audit of technical, genomic-structural, and topological biases in single-cell GRN inference.
+**Unified three-class confound audit for single-cell gene regulatory networks.**
 
-*Anonymous repository for double-blind peer review.*
+This is the v0.2 release for the BMC Bioinformatics revision. Relative to v0.1
+it adds (i) a per-edge degree-preserving topological FDR with optional GPD
+tail extension, (ii) a real cross-class synthesis function (pairwise observed
+vs.\ expected-under-independence agreement, $\phi$, $\chi^2$, bootstrap CI on
+three-way joint retention), (iii) end-to-end CLI wiring for `--metadata`,
+`--counts`, `--edge-features`, `--n-null-replicates`, `--null-tail-method`,
+`--proximity-null-families`, and (iv) a ground-truth simulator for tool
+validation.
 
-## Key Findings
+## What it audits
 
-| Confound Class | Key Metric | Finding |
-|---------------|-----------|---------|
-| **Technical** (batch/donor/method) | Leakage AUC, ASI | Donor/batch identity recoverable at AUC 0.85-0.97; ~25% composition-mediated; ComBat best correction |
-| **Genomic-structural** (proximity) | Enrichment ratio | Prior-heavy methods show 2-3x proximity enrichment; attenuated to 1.15-1.28x under degree-preserving nulls; fails external replication |
-| **Topological** (hub degree) | Global z-score, edge FDR | Global z-scores 12-60 but zero edges significant at FDR <= 0.10 |
-| **Combined** | Joint filter pass rate | Only ~28% of edges pass all three filters jointly |
+| Class | What it tests | Per-edge output | Per-network output |
+|-------|---------------|-----------------|--------------------|
+| **1 -- Technical** | Donor / batch / assay-method leakage in derived edge scores via the **Artefact Sensitivity Index** (ASI) and per-cell leakage classifiers | ASI, blacklist flag | leakage AUC per covariate |
+| **2 -- Genomic proximity** | Inflation of top-k by genomically proximate TF/target pairs, under **three null families** (source-preserving, same-chromosome-conditional, degree-preserving) plus **hub-degree-stratified** breakdown | distance, proximity flag | enrichment + p/q values per null family |
+| **3 -- Topological** | Degree-preserving null with **per-edge BH FDR** at $B \geq 2{,}000$ replicates + optional **GPD tail extension** | empirical & combined per-edge p-value, q-value | global $z$, swap diagnostics, valid-block flag |
+| **Cross-class** | Pairwise observed vs.\ expected-under-independence agreement; $\phi$ + $\chi^2$; bootstrap 95% CI on three-way joint retention | joint pass flag | full synthesis CSV |
 
-## Repository Structure
+## Install
+
+```bash
+pip install -e .
+# or
+conda env create -f environment.yml && conda activate grn-confound-audit
+```
+
+## End-to-end CLI
+
+```bash
+grn-confound-audit run \
+  --edges data/edges.csv \
+  --gene-coords data/coords.tsv \
+  --metadata data/cells.csv \
+  --counts data/counts.parquet \
+  --scores-balanced data/balanced.csv \
+  --n-null-replicates 2000 \
+  --null-tail-method gpd \
+  --proximity-null-families source,same_chr,degree \
+  --asi-threshold 0.5 \
+  --fdr-q 0.10 \
+  --output report/
+```
+
+Inputs:
+
+  * `edges.csv` -- TF, target, score (one row per edge).
+  * `coords.tsv` -- gene, chr, tss.
+  * `cells.csv` -- cell_id plus any of {donor, batch, method}.
+  * `counts.parquet` (or .csv) -- cell x gene log-normalised matrix.
+  * `--edge-features` (optional) -- a pre-computed cell x edge matrix
+    (overrides on-the-fly construction from counts).
+  * `--scores-balanced` (optional) -- balanced-donor edge scores for ASI.
+
+Outputs (in `report/`):
+
+  * `audit_results.json` -- machine-readable full audit results.
+  * `edge_quality_indices.csv` -- per-edge ASI, distance, q-value, pass flags.
+  * `cross_class_synthesis.csv` -- pairwise $\phi$/$\chi^2$ + joint retention.
+  * `audit_summary.txt` -- human-readable summary.
+
+## Reproduce the BMC paper
+
+```bash
+make all          # sims + pert + synth + sweeps + runtime + figures + consistency
+make sims         # tool validation on simulated data (Fig 5)
+make pert         # perturbation validation (Sec A.11, Fig 1B)
+make synth        # cross-class synthesis (Fig 4)
+make sweeps       # hyperparameter sensitivity sweeps (Supplement)
+make runtime      # wall-clock and peak RSS (BENCHMARKS.md, Sec 4.10)
+make figures      # regenerate all 6 figures from CSV/JSON outputs
+make consistency  # paper <-> code numeric consistency check
+```
+
+See `docs/method_variants.md` for the full enumeration of the 12 inference
+method variants audited in the paper, and `BENCHMARKS.md` for the runtime
+benchmark machine spec and per-scale timing.
+
+## Repository layout
 
 ```
 grn-confound-audit/
-  data/                              Result data from each confound class
-    class1_technical/                Leakage AUC, ASI, perturbation validation
-    class2_proximity/                Proximity enrichment curves
-    class3_topological/              Degree-preserving null calibration
+  grn_confound_audit/
+    __init__.py
+    technical.py          # Class 1: ASI + leakage classifiers
+    proximity.py          # Class 2: 3 nulls + hub-degree stratification
+    topological.py        # Class 3: per-edge degree-preserving BH + GPD tail
+    pipeline.py           # Orchestrator + cross-class synthesis
+    simulate.py           # Ground-truth confound simulator
+    cli.py                # End-to-end command-line interface
   scripts/
-    generate_figures.py              Generate all 4 manuscript figures
-  figures/                           Output directory for generated PDFs
-  Makefile                           Build automation
-  requirements.txt                   Python dependencies
-  CITATION.cff                       Citation metadata
-  LICENSE                            MIT License
+    run_simulation_benchmarks.py
+    run_perturbation_validation.py
+    run_cross_class_synthesis_real.py
+    run_sensitivity_sweeps.py
+    run_runtime_benchmarks.py
+    generate_figures.py
+    check_paper_code_consistency.py
+  data/
+    class1_technical/     # legacy aggregate results
+    class2_proximity/     # legacy proximity curves
+    class3_topological/   # legacy topological calibration summary
+    benchmarks/           # outputs from the scripts above
+  docs/
+    method_variants.md    # full enumeration of the 12 variants
+  figures/                # PDF outputs of scripts/generate_figures.py
+  BENCHMARKS.md           # runtime / RSS benchmark machine + numbers
+  Makefile
+  pyproject.toml
+  requirements.txt
+  environment.yml
+  CITATION.cff
+  LICENSE                  # MIT
 ```
-
-## Reproducing the Figures
-
-### Prerequisites
-
-- Python 3.9+
-
-### Quick Start
-
-```bash
-git clone <this-repository>
-cd grn-confound-audit
-
-pip install -r requirements.txt
-
-make all
-```
-
-### Step-by-Step
-
-```bash
-# Generate all 4 figures from the included data
-python scripts/generate_figures.py
-```
-
-This produces four PDF figures in `figures/`:
-
-| Figure | Content | Data Source |
-|--------|---------|-------------|
-| `fig1_technical.pdf` | Technical confound: leakage severity, perturbation validation, correction benchmark | `data/class1_technical/` |
-| `fig2_proximity.pdf` | Genomic proximity: enrichment curves for primary and external methods | `data/class2_proximity/` |
-| `fig3_topological.pdf` | Topological confound: global z-scores and edge-level significance | `data/class3_topological/` |
-| `fig4_crossclass.pdf` | Cross-class synthesis: filter pass rates and pairwise agreement | Derived from cross-class analysis |
-
-## Data Description
-
-### Class 1: Technical Confound (`data/class1_technical/`)
-
-| File | Description |
-|------|-------------|
-| `all_results.json` | Phase 1 leakage classifier results for immune, lung, and kidney: AUC, balanced accuracy, ASI distribution, edge-score stability |
-| `phase2_kidney_results.json` | Phase 2 kidney-specific results (method-balanced, single-donor tissue) |
-| `phase2_leakage_correction_results.json` | Correction benchmark: donor AUC, balanced accuracy, and edge-score preservation for 5 correction methods on lung |
-| `phase2_perturbation_combined_Immune.csv` | Per-edge perturbation validation: ASI, blacklist status, perturbation significance, and effect size for immune-tissue edges matched to CRISPR screens |
-
-### Class 2: Genomic Proximity (`data/class2_proximity/`)
-
-| File | Description |
-|------|-------------|
-| `proximity_bias_curves.csv` | Proximity enrichment ratios at multiple distance thresholds and top-k values for 4 primary inference methods |
-| `external_replication_proximity_curves.csv` | Enrichment curves for 10 external replication datasets (CRISPR perturbation, cross-tissue ortholog, cross-method consensus) |
-
-### Class 3: Topological Confound (`data/class3_topological/`)
-
-| File | Description |
-|------|-------------|
-| `null_calibration_summary.csv` | Degree-preserving null calibration: global z-scores, edge-level FDR significance counts, and swap quality metrics for 12 inference methods at 3 top-k levels |
-
-## Datasets
-
-All analyses use tissue compartments from the Tabula Sapiens atlas:
-
-| Dataset | Cells | Donors | Batches | Classes |
-|---------|-------|--------|---------|---------|
-| Immune | 20,000 | 24 | 42 | 1, 2, 3 |
-| Lung | 20,000 | 4 | 7 | 1, 2, 3 |
-| Kidney | 11,376 | 1 | 2 | 1, 2 |
-
-Raw single-cell data: [tabula-sapiens-portal.ds.czbiohub.org](https://tabula-sapiens-portal.ds.czbiohub.org/)
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+MIT (see `LICENSE`).

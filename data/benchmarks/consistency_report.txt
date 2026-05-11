@@ -1,0 +1,7 @@
+[OK] perturbation rate ratio: expected=2.663  found=2.66
+[OK] joint retention Immune: expected=0.485  found=0.486
+[OK] joint retention Lung: expected=0.503  found=0.503
+[OK] joint retention Kidney: expected=0.496  found=0.497
+[OK] ASI threshold (paper says > 0.5): expected=0.5  found=0.5
+[OK] n_null_replicates default (paper says 2,000): expected=2000  found=2000
+[OK] top_k defaults (paper says {100, 250, 500, 1000}): expected=[100, 250, 500, 1000]  found=[100, 250, 500, 1000]

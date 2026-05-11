@@ -1,0 +1,89 @@
+{
+  "source_file": "class1_technical/phase2_perturbation_combined_Immune.csv",
+  "definitions": {
+    "ASI": "|r_full - r_balanced| / max(|r_full|, 0.01); per-edge stability of the score under donor balancing.  Higher = more donor-confounded.  Blacklist criterion: ASI > 0.5.",
+    "perturbation_significant": "Per-edge BH-corrected q <= 0.05 on the differential-expression test (KO vs. control) of the target gene in the listed CRISPR resource (Dixit 2016).",
+    "rate_ratio": "P(pert_sig | clean) / P(pert_sig | blacklisted)."
+  },
+  "n_total_edges": 243,
+  "contingency": {
+    "clean_pert_sig (a)": 9,
+    "clean_not_sig (b)": 89,
+    "black_pert_sig (c)": 5,
+    "black_not_sig (d)": 140
+  },
+  "rates": {
+    "rate_pert_sig_clean": 0.0918,
+    "rate_pert_sig_blacklisted": 0.0345,
+    "rate_ratio": 2.663,
+    "rate_ratio_bootstrap_95CI": [
+      0.88,
+      10.239
+    ],
+    "rate_ratio_bootstrap_median": 2.631
+  },
+  "odds_ratio_95CI_woolf": [
+    2.712,
+    0.918,
+    8.009
+  ],
+  "fisher_test": {
+    "odds_ratio": 2.831460674157303,
+    "p_value": 0.05593031157644827,
+    "alternative": "greater"
+  },
+  "by_tf_degree_quartile": [],
+  "permutation_null": {
+    "n_permutations": 1000,
+    "observed_rate_ratio": 2.663,
+    "two_sided_p_value": 0.056
+  },
+  "by_tf_count": 3,
+  "threshold_sweep_summary": [
+    {
+      "asi_threshold": 0.3,
+      "n_blacklisted": 175,
+      "rate_clean": 0.0882,
+      "rate_blacklisted": 0.0457,
+      "rate_ratio": 1.93,
+      "bootstrap_95CI_lo": 0.572,
+      "bootstrap_95CI_hi": 5.478
+    },
+    {
+      "asi_threshold": 0.4,
+      "n_blacklisted": 162,
+      "rate_clean": 0.0988,
+      "rate_blacklisted": 0.037,
+      "rate_ratio": 2.667,
+      "bootstrap_95CI_lo": 0.913,
+      "bootstrap_95CI_hi": 8.387
+    },
+    {
+      "asi_threshold": 0.5,
+      "n_blacklisted": 145,
+      "rate_clean": 0.0918,
+      "rate_blacklisted": 0.0345,
+      "rate_ratio": 2.663,
+      "bootstrap_95CI_lo": 0.88,
+      "bootstrap_95CI_hi": 10.239
+    },
+    {
+      "asi_threshold": 0.6,
+      "n_blacklisted": 128,
+      "rate_clean": 0.087,
+      "rate_blacklisted": 0.0312,
+      "rate_ratio": 2.783,
+      "bootstrap_95CI_lo": 0.943,
+      "bootstrap_95CI_hi": 12.491
+    },
+    {
+      "asi_threshold": 0.7,
+      "n_blacklisted": 119,
+      "rate_clean": 0.0806,
+      "rate_blacklisted": 0.0336,
+      "rate_ratio": 2.399,
+      "bootstrap_95CI_lo": 0.829,
+      "bootstrap_95CI_hi": 10.856
+    }
+  ]
+}

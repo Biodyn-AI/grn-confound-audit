@@ -1,0 +1,4 @@
+scale,n_edges,n_cells,sim_time_s,class1_time_s,class2_time_s,class3_time_s,total_audit_time_s,peak_rss_mb,rss_delta_mb
+small,390,200,0.02,2.22,2.66,2.27,7.15,164.1,11.2
+medium,1526,500,0.06,3.72,15.79,9.32,28.83,207.0,42.9
+large,4052,1000,0.18,4.9,42.73,26.26,73.89,401.6,194.6

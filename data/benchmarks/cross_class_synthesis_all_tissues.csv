@@ -1,0 +1,10 @@
+pair,class_a,class_b,n,n11_both_pass,n10_a_pass_only,n01_b_pass_only,n00_both_fail,observed_agreement,expected_agreement_under_independence,phi_coefficient,chi2,chi2_p_value,tissue,joint_retention_rate,joint_retention_ci_lo,joint_retention_ci_hi
+class1_vs_class2,class1,class2,964,936,2,26,0,0.971,0.9711,-0.0076,0.0556,0.8136689861490483,Immune,0.4855,0.4533,0.5145
+class1_vs_class3,class1,class3,964,470,468,13,13,0.501,0.501,0.0003,0.0001,0.9914432389442324,Immune,0.4855,0.4533,0.5145
+class2_vs_class3,class2,class3,964,481,481,2,0,0.499,0.501,-0.0455,1.9959,0.1577295930656463,Immune,0.4855,0.4533,0.5145
+class1_vs_class2,class1,class2,969,967,2,0,0,0.9979,0.9979,0.0,,,Lung,0.5026,0.4706,0.5356
+class1_vs_class3,class1,class3,969,488,481,0,0,0.5036,0.5036,0.0,,,Lung,0.5026,0.4706,0.5356
+class2_vs_class3,class2,class3,969,487,480,1,1,0.5036,0.5036,0.0003,0.0001,0.9918401582657721,Lung,0.5026,0.4706,0.5356
+class1_vs_class2,class1,class2,987,980,7,0,0,0.9929,0.9929,0.0,,,Kidney,0.4965,0.467,0.5258
+class1_vs_class3,class1,class3,987,494,493,0,0,0.5005,0.5005,0.0,,,Kidney,0.4965,0.467,0.5258
+class2_vs_class3,class2,class3,987,490,490,4,3,0.4995,0.5005,-0.012,0.1418,0.7064545495163213,Kidney,0.4965,0.467,0.5258
